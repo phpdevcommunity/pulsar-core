@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pulsar\Core;
 
 use DevCoder\DotEnv;
@@ -10,13 +12,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-/**
- * Class Kernel
- * @package App
- */
 abstract class BaseKernel implements RequestHandlerInterface
 {
-    const VERSION = '1.0.0';
+    public const VERSION = '1.0.0';
 
     /**
      * @var ContainerInterface
@@ -24,7 +22,7 @@ abstract class BaseKernel implements RequestHandlerInterface
     protected $container;
 
     /**
-     * @var MiddlewareInterface[]
+     * @var array<MiddlewareInterface, string>
      */
     private $middlewareCollection = [];
 
@@ -58,14 +56,12 @@ abstract class BaseKernel implements RequestHandlerInterface
             }
 
             return $middleware->process($request, $this);
-
-        } catch (Exception $e) {
-            throw $e;
+        } catch (Exception $exception) {
+            throw $exception;
         }
     }
 
     /**
-     *
      * @return void
      */
     protected function boot(): void
@@ -74,7 +70,7 @@ abstract class BaseKernel implements RequestHandlerInterface
         $middlewareFile = '/middlewares.php';
         if (getenv('APP_ENV') === 'dev') {
             error_reporting(E_ALL);
-            ini_set("display_errors", 1);
+            ini_set('display_errors', '1');
             $middlewareFile = sprintf('/middlewares.%s.php', getenv('APP_ENV'));
         }
 
@@ -95,7 +91,7 @@ abstract class BaseKernel implements RequestHandlerInterface
 
     /**
      * @param array $middleware
-     * @return MiddlewareInterface[]|string
+     * @return array<MiddlewareInterface, string>
      */
     abstract protected function loadMiddleware(array $middleware): array;
 

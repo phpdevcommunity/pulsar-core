@@ -1,13 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Pulsar\Core\Controller;
 
 use Psr\Container\ContainerInterface;
 
-/**
- * Class Controller
- * @package App\Controller
- */
 abstract class Controller
 {
     /**
@@ -23,10 +21,6 @@ abstract class Controller
         $this->container = $container;
     }
 
-    /**
-     * @param string $id
-     * @return mixed
-     */
     protected function get(string $id)
     {
         return $this->container->get($id);
