@@ -11,15 +11,16 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Pulsar\Core\Controller\Controller;
 
+/**
+ * @author Devcoder.xyz <dev@devcoder.xyz>
+ */
 final class ControllerMiddleware implements MiddlewareInterface
 {
     public const CONTROLLER = '_controller';
     public const ACTION = '_action';
     public const NAME = '_name';
 
-    /**
-     * @var ContainerInterface
-     */
+    /*** @var ContainerInterface */
     private $container;
 
     /**
@@ -39,12 +40,11 @@ final class ControllerMiddleware implements MiddlewareInterface
          * @var ResponseInterface $response
          */
         $response = $controller(...$arguments);
-        if (! $response instanceof ResponseInterface) {
+        if (!$response instanceof ResponseInterface) {
             throw new \Exception(
                 'The controller must return an instance of Psr\Http\Message\ResponseInterface.'
             );
         }
-
         return $response;
     }
 

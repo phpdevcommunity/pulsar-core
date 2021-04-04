@@ -5,8 +5,9 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Fad M.R",
-            "email": "dev@devcoder.xyz"
+            "name": " F. Michel.R",
+            "email": "dev@devcoder.xyz",
+            "homepage": "https://www.devcoder.xyz"
         }
     ],
     "autoload": {
@@ -20,6 +21,7 @@
         "psr/http-message": "~1.0",
         "psr/http-server-handler": "^1.0",
         "psr/http-server-middleware": "^1.0",
+        "psr/http-factory": "^1.0",
         "devcoder-xyz/php-dotenv": "^1.0"
     },
     "require-dev": {

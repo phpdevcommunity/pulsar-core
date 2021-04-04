@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Pulsar\Core;
@@ -12,6 +11,12 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+/**
+ * @package	Pulsar
+ * @author	Devcoder.xyz <dev@devcoder.xyz>
+ * @license	https://opensource.org/licenses/MIT	MIT License
+ * @link	https://www.devcoder.xyz
+ */
 abstract class BaseKernel implements RequestHandlerInterface
 {
     public const VERSION = '1.0.0';
@@ -31,6 +36,7 @@ abstract class BaseKernel implements RequestHandlerInterface
      */
     public function __construct()
     {
+        App::init($this->getProjectDir() . '/config/framework.php');
         $this->boot();
     }
 
@@ -62,9 +68,21 @@ abstract class BaseKernel implements RequestHandlerInterface
     }
 
     /**
-     * @return void
+     * @param array $parameters
+     * @param array $services
+     * @return ContainerInterface
      */
-    protected function boot(): void
+    abstract protected function loadContainer(array $parameters, array $services): ContainerInterface;
+
+    /**
+     * @param array $middleware
+     * @return array<MiddlewareInterface, string>
+     */
+    abstract protected function loadMiddleware(array $middleware): array;
+
+    abstract protected function getProjectDir(): string;
+
+    private function boot(): void
     {
         (new DotEnv($this->getProjectDir() . '/.env'))->load();
         $middlewareFile = '/middlewares.php';
@@ -78,25 +96,12 @@ abstract class BaseKernel implements RequestHandlerInterface
         $services = require $this->getProjectDir() . '/config/services.php';
         $middleware = require $this->getProjectDir() . '/config' . $middlewareFile;
 
+        $parameters = array_merge([
+            'pulsar.environment' => getenv('APP_ENV'),
+            'pulsar.project_dir' =>  $this->getProjectDir(),
+        ], $parameters);
+
         $this->container = $this->loadContainer($parameters, $services);
         $this->middlewareCollection = $this->loadMiddleware($middleware);
     }
-
-    /**
-     * @param array $parameters
-     * @param array $services
-     * @return ContainerInterface
-     */
-    abstract protected function loadContainer(array $parameters, array $services): ContainerInterface;
-
-    /**
-     * @param array $middleware
-     * @return array<MiddlewareInterface, string>
-     */
-    abstract protected function loadMiddleware(array $middleware): array;
-
-    /**
-     * @return string
-     */
-    abstract protected function getProjectDir(): string;
 }
