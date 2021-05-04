@@ -68,6 +68,14 @@ abstract class BaseKernel implements RequestHandlerInterface
     }
 
     /**
+     * @return ContainerInterface
+     */
+    public function getContainer(): ContainerInterface
+    {
+        return $this->container;
+    }
+
+    /**
      * @param array $parameters
      * @param array $services
      * @return ContainerInterface
