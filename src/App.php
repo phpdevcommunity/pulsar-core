@@ -31,10 +31,10 @@ final class App
     {
         $resolver = new OptionsResolver([
             (new Option('server_request'))->validator(static function($value) {
-                return $value instanceof ServerRequestInterface;
+                return $value instanceof \Closure && $value() instanceof ServerRequestInterface;
             }),
             (new Option('response_factory'))->validator(static function($value) {
-                return $value instanceof ResponseFactoryInterface;
+                return $value instanceof \Closure && $value() instanceof ResponseFactoryInterface;
             }),
         ]);
         $this->options = $resolver->resolve($options);
