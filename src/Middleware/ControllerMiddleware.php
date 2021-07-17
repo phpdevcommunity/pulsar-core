@@ -41,7 +41,7 @@ final class ControllerMiddleware implements MiddlewareInterface
          */
         $response = $controller(...$arguments);
         if (!$response instanceof ResponseInterface) {
-            throw new \Exception(
+            throw new \LogicException(
                 'The controller must return an instance of Psr\Http\Message\ResponseInterface.'
             );
         }

@@ -40,8 +40,6 @@ final class HttpExceptionHandlerMiddleware implements MiddlewareInterface
             $response = $this->responseFactory->createResponse($httpException->getStatusCode());
             $response->getBody()->write($httpException->getMessage());
         }
-
         return $response;
     }
-
 }

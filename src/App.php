@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Pulsar\Core;
 
+use DevCoder\Resolver\Option;
+use DevCoder\Resolver\OptionsResolver;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -27,13 +29,15 @@ final class App
 
     private function __construct(array $options)
     {
-        if (array_key_exists('server_request', $options) === false) {
-            throw new \LogicException('server_request is missing');
-        }
-        if (array_key_exists('response_factory', $options) === false) {
-            throw new \LogicException('response_factory is missing');
-        }
-        $this->options = $options;
+        $resolver = new OptionsResolver([
+            (new Option('server_request'))->validator(static function($value) {
+                return $value instanceof ServerRequestInterface;
+            }),
+            (new Option('response_factory'))->validator(static function($value) {
+                return $value instanceof ResponseFactoryInterface;
+            }),
+        ]);
+        $this->options = $resolver->resolve($options);
     }
 
     public static function init(string $path): void

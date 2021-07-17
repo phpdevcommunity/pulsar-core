@@ -20,7 +20,7 @@ class HttpException extends \Exception implements HttpExceptionInterface
     public function __construct(int $statusCode, ?string $message = null, ?int $code = null, \Throwable $previous = null)
     {
         if ($message === null) {
-            $message = static::$defaultMessage;
+            $message = static::$defaultMessage ?: 'An error occurred';
         }
 
         $this->statusCode = $statusCode;
