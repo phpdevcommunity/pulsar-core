@@ -51,18 +51,19 @@ abstract class BaseKernel implements RequestHandlerInterface
             /**
              * @var MiddlewareInterface $middleware
              */
-            $middleware = current($this->middlewareCollection);
-            next($this->middlewareCollection);
+            $middleware = \current($this->middlewareCollection);
+            \next($this->middlewareCollection);
             if ($middleware === false) {
                 throw new \LogicException('The Middleware must return an instance of Psr\Http\Message\ResponseInterface.');
             }
 
-            if (is_string($middleware)) {
+            if (\is_string($middleware)) {
                 $middleware = $this->container->get($middleware);
             }
 
             return $middleware->process($request, $this);
         } catch (Exception $exception) {
+            \error_log($exception->getMessage(), 0);
             throw $exception;
         }
     }
@@ -89,18 +90,18 @@ abstract class BaseKernel implements RequestHandlerInterface
     {
         (new DotEnv($this->getProjectDir() . '/.env'))->load();
         $middlewareFile = '/middlewares.php';
-        if (getenv('APP_ENV') === 'dev') {
-            error_reporting(E_ALL);
-            ini_set('display_errors', '1');
-            $middlewareFile = sprintf('/middlewares.%s.php', getenv('APP_ENV'));
+        if (\getenv('APP_ENV') === 'dev') {
+            \error_reporting(E_ALL);
+            \ini_set('display_errors', '1');
+            $middlewareFile = \sprintf('/middlewares.%s.php', getenv('APP_ENV'));
         }
 
         $parameters = require $this->getProjectDir() . '/config/parameters.php';
         $services = require $this->getProjectDir() . '/config/services.php';
         $middleware = require $this->getProjectDir() . '/config' . $middlewareFile;
 
-        $parameters = array_merge([
-            'pulsar.environment' => getenv('APP_ENV'),
+        $parameters = \array_merge([
+            'pulsar.environment' => \getenv('APP_ENV'),
             'pulsar.project_dir' =>  $this->getProjectDir(),
         ], $parameters);
 
