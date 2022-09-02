@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Pulsar\Core;
@@ -13,10 +12,10 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * @package	Pulsar
- * @author	Devcoder.xyz <dev@devcoder.xyz>
- * @license	https://opensource.org/licenses/MIT	MIT License
- * @link	https://www.devcoder.xyz
+ * @package    Pulsar
+ * @author    Devcoder.xyz <dev@devcoder.xyz>
+ * @license    https://opensource.org/licenses/MIT	MIT License
+ * @link    https://www.devcoder.xyz
  */
 abstract class BaseKernel implements RequestHandlerInterface
 {
@@ -37,7 +36,7 @@ abstract class BaseKernel implements RequestHandlerInterface
      */
     public function __construct()
     {
-        App::init($this->getProjectDir() . '/config/framework.php');
+        App::init($this->getProjectDir() . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'framework.php');
         $this->boot();
     }
 
@@ -49,9 +48,6 @@ abstract class BaseKernel implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         try {
-            /**
-             * @var MiddlewareInterface $middleware
-             */
             $middleware = \current($this->middlewareCollection);
             \next($this->middlewareCollection);
             if ($middleware === false) {
@@ -62,8 +58,13 @@ abstract class BaseKernel implements RequestHandlerInterface
                 $middleware = $this->container->get($middleware);
             }
 
+            if (!$middleware instanceof MiddlewareInterface) {
+                throw new \LogicException('The Middleware must be an instance of Psr\Http\Server\MiddlewareInterface.');
+            }
+
             return $middleware->process($request, $this);
         } catch (Exception $exception) {
+            \error_log($exception->getTraceAsString(), 0);
             \error_log($exception->getMessage(), 0);
             throw $exception;
         }
@@ -89,24 +90,25 @@ abstract class BaseKernel implements RequestHandlerInterface
 
     private function boot(): void
     {
-        (new DotEnv($this->getProjectDir() . '/.env'))->load();
-        $middlewareFile = '/middlewares.php';
+        (new DotEnv($this->getProjectDir() . DIRECTORY_SEPARATOR . '.env'))->load();
         if (\getenv('APP_ENV') === 'dev') {
             \error_reporting(E_ALL);
             \ini_set('display_errors', '1');
-            $middlewareFile = \sprintf('/middlewares.%s.php', getenv('APP_ENV'));
         }
 
-        $parameters = require $this->getProjectDir() . '/config/parameters.php';
-        $services = require $this->getProjectDir() . '/config/services.php';
-        $middleware = require $this->getProjectDir() . '/config' . $middlewareFile;
+        $parameters = require $this->getProjectDir() . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'parameters.php';
+        $services = require $this->getProjectDir() . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'services.php';
+        $middlewares = require $this->getProjectDir() . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'middlewares.php';
+        $middlewares = \array_filter($middlewares, function ($environments) {
+            return \in_array(\getenv('APP_ENV'), $environments);
+        });
 
         $parameters = \array_merge([
             'pulsar.environment' => \getenv('APP_ENV'),
-            'pulsar.project_dir' =>  $this->getProjectDir(),
+            'pulsar.project_dir' => $this->getProjectDir(),
         ], $parameters);
 
         $this->container = $this->loadContainer($parameters, $services);
-        $this->middlewareCollection = $this->loadMiddleware($middleware);
+        $this->middlewareCollection = $this->loadMiddleware(array_keys($middlewares));
     }
 }
