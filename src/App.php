@@ -37,7 +37,7 @@ final class App
             (new Option('response_factory'))->validator(static function ($value) {
                 return $value instanceof \Closure;
             }),
-            (new Option('container'))->validator(static function ($value) {
+            (new Option('container_builder'))->validator(static function ($value) {
                 return $value instanceof \Closure;
             })
         ]);
@@ -64,9 +64,9 @@ final class App
         return $responseFactory();
     }
 
-    public static function createContainer(): \Closure
+    public static function createContainerBuilder(): \Closure
     {
-        return self::getApp()->options['container'];
+        return self::getApp()->options['container_builder'];
     }
 
     private static function getApp(): self
