@@ -37,9 +37,6 @@ final class App
             (new Option('response_factory'))->validator(static function ($value) {
                 return $value instanceof \Closure;
             }),
-            (new Option('project_dir'))->validator(static function ($value) {
-                return \is_dir($value);
-            }),
             (new Option('container'))->validator(static function ($value) {
                 return $value instanceof \Closure;
             })
@@ -65,11 +62,6 @@ final class App
     {
         $responseFactory = self::getApp()->options['response_factory'];
         return $responseFactory();
-    }
-
-    public static function getProjectDir(): string
-    {
-        return  self::getApp()->options['project_dir'];
     }
 
     public static function createContainer(): ContainerInterface
