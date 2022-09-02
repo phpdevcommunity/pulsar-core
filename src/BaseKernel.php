@@ -64,8 +64,8 @@ abstract class BaseKernel implements RequestHandlerInterface
 
             return $middleware->process($request, $this);
         } catch (Exception $exception) {
-            \error_log($exception->getTraceAsString(), 0);
-            \error_log($exception->getMessage(), 0);
+            \error_log($exception->getTraceAsString());
+            \error_log($exception->getMessage());
             throw $exception;
         }
     }
@@ -78,7 +78,7 @@ abstract class BaseKernel implements RequestHandlerInterface
         return $this->container;
     }
 
-    abstract protected function loadContainer(array $parameters, array $services): ContainerInterface;
+    abstract protected function loadContainer($definitions): ContainerInterface;
 
     /**
      * @param array $middleware
@@ -103,12 +103,10 @@ abstract class BaseKernel implements RequestHandlerInterface
             return \in_array(\getenv('APP_ENV'), $environments);
         });
 
-        $parameters = \array_merge([
-            'pulsar.environment' => \getenv('APP_ENV'),
-            'pulsar.project_dir' => $this->getProjectDir(),
-        ], $parameters);
+        $parameters['pulsar.environment'] = \getenv('APP_ENV');
+        $parameters['pulsar.project_dir'] = $this->getProjectDir();
 
-        $this->container = $this->loadContainer($parameters, $services);
-        $this->middlewareCollection = $this->loadMiddleware(array_keys($middlewares));
+        $this->container = $this->loadContainer(\array_merge($parameters, $services));
+        $this->middlewareCollection = $this->loadMiddleware(\array_keys($middlewares));
     }
 }
