@@ -64,10 +64,9 @@ final class App
         return $responseFactory();
     }
 
-    public static function createContainer(): ContainerInterface
+    public static function createContainer(): \Closure
     {
-        $serverRequest = self::getApp()->options['container'];
-        return $serverRequest();
+        return self::getApp()->options['container'];
     }
 
     private static function getApp(): self
