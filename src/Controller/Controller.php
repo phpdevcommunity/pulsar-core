@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Pulsar\Core\Controller;
 
+use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\ResponseInterface;
-use Pulsar\Core\App;
+use Psr\Http\Server\MiddlewareInterface;
 
 /**
  * @author Devcoder.xyz <dev@devcoder.xyz>
@@ -18,24 +18,38 @@ abstract class Controller
      */
     private $container;
 
+    /**
+     * @var array<MiddlewareInterface, string>
+     */
+    protected $middlewares = [];
+
     public function setContainer(ContainerInterface $container): void
     {
         $this->container = $container;
     }
 
+    /**
+     * @return array<MiddlewareInterface, string>
+     */
+    public function getMiddlewares(): array
+    {
+        return $this->middlewares;
+    }
+
+    /***
+     * @param $middleware MiddlewareInterface|string
+     * @return void
+     */
+    protected function middleware($middleware): void
+    {
+        if (!$middleware instanceof MiddlewareInterface && (!is_string($middleware) || !class_exists($middleware))) {
+            throw new InvalidArgumentException('The Middleware must be Class name or an instance of Psr\Http\Message\ResponseInterface.');
+        }
+        $this->middlewares[] = $middleware;
+    }
+
     protected function get(string $id)
     {
         return $this->container->get($id);
-    }
-
-    protected function redirect(string $url, int $status = 302): ResponseInterface
-    {
-        $response = App::getResponseFactory()->createResponse($status);
-        return $response->withHeader('Location', $url);
-    }
-
-    protected function createResponse(int $code = 200, string $reasonPhrase = ''): ResponseInterface
-    {
-        return App::getResponseFactory()->createResponse($code, $reasonPhrase);
     }
 }

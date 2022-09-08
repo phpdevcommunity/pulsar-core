@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pulsar\Core\Http;
+namespace Pulsar\Core\Http\Exception;
 
 /**
  * @author Devcoder.xyz <dev@devcoder.xyz>
@@ -16,4 +16,10 @@ interface HttpExceptionInterface extends \Throwable
      */
     public function getStatusCode(): int;
 
+    /**
+     * Returns the default message status.
+     *
+     * @return string
+     */
+    public function getDefaultMessage(): string;
 }

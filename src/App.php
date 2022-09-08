@@ -6,9 +6,9 @@ namespace Pulsar\Core;
 
 use DevCoder\Resolver\Option;
 use DevCoder\Resolver\OptionsResolver;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Pulsar\Core\Util\ExceptionHandler;
 
 /**
  * @package    Pulsar
@@ -39,7 +39,20 @@ final class App
             }),
             (new Option('container_builder'))->validator(static function ($value) {
                 return $value instanceof \Closure;
-            })
+            }),
+            (new Option('custom_environments'))->validator(static function ($value) {
+                if (is_array($value) === false) {
+                    return false;
+                }
+                $environmentsFiltered = array_filter($value, function ($value) {
+                    return is_string($value) === false;
+                });
+                if ($environmentsFiltered !== []) {
+                  throw new \InvalidArgumentException('custom_environments array values must be string only');
+                }
+                return true;
+
+            })->setDefaultValue([])
         ]);
         $this->options = $resolver->resolve($options);
     }
@@ -67,6 +80,11 @@ final class App
     public static function createContainerBuilder(): \Closure
     {
         return self::getApp()->options['container_builder'];
+    }
+
+    public static function getCustomEnvironments(): array
+    {
+        return self::getApp()->options['custom_environments'];
     }
 
     private static function getApp(): self
