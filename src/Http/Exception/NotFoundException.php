@@ -9,7 +9,7 @@ namespace Pulsar\Core\Http\Exception;
  */
 class NotFoundException extends HttpException
 {
-    protected static $defaultMessage = 'Not Found';
+    protected static ?string $defaultMessage = 'Not Found';
 
     public function __construct(?string $message = null, int $code = 0, \Throwable $previous = null)
     {

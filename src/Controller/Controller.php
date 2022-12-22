@@ -13,15 +13,8 @@ use Psr\Http\Server\MiddlewareInterface;
  */
 abstract class Controller
 {
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
-
-    /**
-     * @var array<MiddlewareInterface, string>
-     */
-    protected $middlewares = [];
+    private ContainerInterface $container;
+    protected array $middlewares = [];
 
     public function setContainer(ContainerInterface $container): void
     {

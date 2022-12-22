@@ -6,8 +6,10 @@ namespace Pulsar\Core;
 
 use DevCoder\Resolver\Option;
 use DevCoder\Resolver\OptionsResolver;
+use PhpParser\Node\Expr\Closure;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Pulsar\Core\Router\RouterBuilder;
 use Pulsar\Core\Util\ExceptionHandler;
 
 /**
@@ -18,15 +20,8 @@ use Pulsar\Core\Util\ExceptionHandler;
  */
 final class App
 {
-    /**
-     * @var array
-     */
-    private $options = [];
-
-    /**
-     * @var self|null
-     */
-    private static $instance;
+    private array $options = [];
+    private static App $instance;
 
     private function __construct(array $options)
     {
@@ -38,6 +33,12 @@ final class App
                 return $value instanceof \Closure;
             }),
             (new Option('container_builder'))->validator(static function ($value) {
+                return $value instanceof \Closure;
+            }),
+            (new Option('event_dispatcher_builder'))->validator(static function ($value) {
+                return $value instanceof \Closure;
+            }),
+            (new Option('router_builder'))->validator(static function ($value) {
                 return $value instanceof \Closure;
             }),
             (new Option('custom_environments'))->validator(static function ($value) {
@@ -52,7 +53,13 @@ final class App
                 }
                 return true;
 
-            })->setDefaultValue([])
+            })->setDefaultValue([]),
+            (new Option('template_directory'))->validator(static function ($value) {
+                return is_string($value) && is_dir($value);
+            }),
+            (new Option('assets_directory'))->validator(static function ($value) {
+                return is_string($value) && is_dir($value);
+            }),
         ]);
         $this->options = $resolver->resolve($options);
     }
@@ -82,9 +89,29 @@ final class App
         return self::getApp()->options['container_builder'];
     }
 
+    public static function createEventDispatcherBuilder(): \Closure
+    {
+        return self::getApp()->options['event_dispatcher_builder'];
+    }
+
+    public static function createRouterBuilder(): \Closure
+    {
+        return self::getApp()->options['router_builder'];
+    }
+
     public static function getCustomEnvironments(): array
     {
         return self::getApp()->options['custom_environments'];
+    }
+
+    public static function getTemplateDir(): string
+    {
+        return self::getApp()->options['template_directory'];
+    }
+
+    public static function getAssetsDir(): string
+    {
+        return self::getApp()->options['assets_directory'];
     }
 
     private static function getApp(): self

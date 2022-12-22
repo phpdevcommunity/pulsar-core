@@ -14,15 +14,8 @@ use Pulsar\Core\Http\Exception\HttpExceptionInterface;
 
 class ExceptionHandler
 {
-    /**
-     * @var ResponseFactoryInterface
-     */
-    private $responseFactory;
-
-    /**
-     * @var array
-     */
-    private $options;
+    private ResponseFactoryInterface $responseFactory;
+    private array $options;
 
     public function __construct(ResponseFactoryInterface $responseFactory, array $options = [])
     {

@@ -29,8 +29,7 @@ final class ControllerMiddleware implements MiddlewareInterface
     public const ACTION = '_action';
     public const NAME = '_name';
 
-    /*** @var ContainerInterface */
-    private $container;
+    private ContainerInterface $container;
 
     /**
      * RouterMiddleware constructor.

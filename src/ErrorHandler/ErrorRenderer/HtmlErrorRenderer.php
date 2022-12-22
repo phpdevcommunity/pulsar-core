@@ -4,6 +4,7 @@ namespace Pulsar\Core\ErrorHandler\ErrorRenderer;
 
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
 use Pulsar\Core\Http\Exception\HttpExceptionInterface;
 use function dirname;
 use function extract;
@@ -14,20 +15,9 @@ use function sprintf;
 
 final class HtmlErrorRenderer
 {
-    /**
-     * @var ResponseFactoryInterface
-     */
-    private $responseFactory;
-
-    /**
-     * @var bool
-     */
-    private $debug;
-
-    /**
-     * @var string|null
-     */
-    private $templateDir;
+    private ResponseFactoryInterface $responseFactory;
+    private bool $debug;
+    private ?string $templateDir;
 
     public function __construct(ResponseFactoryInterface $responseFactory, bool $debug = false, ?string $templateDir = null)
     {
@@ -42,7 +32,7 @@ final class HtmlErrorRenderer
         }
     }
 
-    public function __invoke(HttpExceptionInterface $exception)
+    public function __invoke(HttpExceptionInterface $exception): ResponseInterface
     {
         $response = $this->responseFactory->createResponse($exception->getStatusCode());
         if ($this->isDebug() === false) {

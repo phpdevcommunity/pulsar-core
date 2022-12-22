@@ -9,7 +9,7 @@ namespace Pulsar\Core\Http\Exception;
  */
 class UnauthorizedException extends HttpException
 {
-    protected static $defaultMessage = 'Unauthorized';
+    protected static ?string $defaultMessage = 'Unauthorized';
 
     public function __construct(?string $message = null, int $code = 0, \Throwable $previous = null)
     {

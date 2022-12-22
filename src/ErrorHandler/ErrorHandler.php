@@ -13,7 +13,7 @@ final class ErrorHandler
     /**
      * @var array
      */
-    private $deprecations = [];
+    private array $deprecations = [];
 
     public static function register(): self
     {

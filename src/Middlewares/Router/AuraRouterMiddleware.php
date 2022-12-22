@@ -19,11 +19,11 @@ final class AuraRouterMiddleware implements MiddlewareInterface
     /**
      * @var \Aura\Router\RouterContainer
      */
-    private $routerContainer;
+    private \Aura\Router\RouterContainer $routerContainer;
     /**
      * @var ResponseFactoryInterface
      */
-    private $responseFactory;
+    private ResponseFactoryInterface $responseFactory;
 
     public function __construct(\Aura\Router\RouterContainer $routerContainer, ResponseFactoryInterface $responseFactory)
     {

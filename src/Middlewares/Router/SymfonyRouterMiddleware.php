@@ -24,11 +24,11 @@ final class SymfonyRouterMiddleware implements MiddlewareInterface
     /**
      * @var \Symfony\Component\Routing\RouteCollection
      */
-    private $routeCollection;
+    private \Symfony\Component\Routing\RouteCollection $routeCollection;
     /**
      * @var ResponseFactoryInterface
      */
-    private $responseFactory;
+    private ResponseFactoryInterface $responseFactory;
 
     public function __construct(\Symfony\Component\Routing\RouteCollection $routeCollection, ResponseFactoryInterface $responseFactory)
     {

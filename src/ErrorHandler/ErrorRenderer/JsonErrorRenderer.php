@@ -9,15 +9,8 @@ use function json_encode;
 
 final class JsonErrorRenderer
 {
-    /**
-     * @var ResponseFactoryInterface
-     */
-    private $responseFactory;
-
-    /**
-     * @var bool
-     */
-    private $debug;
+    private ResponseFactoryInterface $responseFactory;
+    private bool $debug;
 
     public function __construct(ResponseFactoryInterface $responseFactory, bool $debug = false)
     {

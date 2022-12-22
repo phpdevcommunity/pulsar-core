@@ -68,6 +68,7 @@ if (!function_exists('render_view')) {
 
     function render_view(string $view, array $context = []): string
     {
+        $view = App::getTemplateDir() . DIRECTORY_SEPARATOR . $view;
         if (!file_exists($view)) {
             throw new Exception(sprintf('The file %s could not be found.', $view));
         }
@@ -95,6 +96,14 @@ if (!function_exists('__e')) {
     }
 }
 
+if (!function_exists('asset')) {
+
+    function asset(string $path): string
+    {
+        return App::getAssetsDir() . DIRECTORY_SEPARATOR . $path;
+    }
+}
+
 if (!function_exists('dd')) {
 
     function dd(...$data)
@@ -109,12 +118,12 @@ if (!function_exists('dump')) {
     function dump(...$data)
     {
         echo '<pre style="color: #3b4351;
-            background-color: #f3f3f3;
-            border: 1px solid #03a9f4;
-            margin:1rem; 
-            padding:0.5rem; 
+            background-color: #f1f1f1;
+            border: 1px dashed #03a9f4;
+            margin:0.3rem;
+            padding:0.3rem;
             overflow: auto;
-            line-height: 1.2rem;
+            line-height: 1rem;
             white-space: pre-wrap;
             white-space: -moz-pre-wrap;
             white-space: -o-pre-wrap;

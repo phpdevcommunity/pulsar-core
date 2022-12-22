@@ -16,23 +16,20 @@ use function next;
 final class RequestHandler implements RequestHandlerInterface
 {
     /**
-     * @var array<MiddlewareInterface, string>
-     */
-    private $middlewareCollection;
-    /**
      * @var ContainerInterface
      */
-    private $container;
+    private ContainerInterface $container;
+
+    /**
+     * @var array<MiddlewareInterface, string>
+     */
+    private array $middlewareCollection;
+
     /**
      * @var \Closure|null
      */
-    private $then;
+    private ?\Closure $then;
 
-    /**
-     * @param ContainerInterface $container
-     * @param $middlewareCollection array<MiddlewareInterface, string>
-     * @param \Closure|null $then
-     */
     public function __construct(ContainerInterface $container, array $middlewareCollection, \Closure $then = null)
     {
         $this->container = $container;

@@ -9,7 +9,7 @@ namespace Pulsar\Core\Http\Exception;
  */
 class ForbiddenException extends HttpException
 {
-    protected static $defaultMessage = 'Access Denied';
+    protected static ?string $defaultMessage = 'Access Denied';
 
     public function __construct(?string $message = null, int $code = 0, \Throwable $previous = null)
     {

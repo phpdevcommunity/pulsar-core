@@ -9,7 +9,7 @@ namespace Pulsar\Core\Http\Exception;
  */
 class BadRequestException extends HttpException
 {
-    protected static $defaultMessage = 'Bad Request';
+    protected static ?string $defaultMessage = 'Bad Request';
 
     public function __construct(?string $message = null, int $code = 0, \Throwable $previous = null)
     {
