@@ -52,7 +52,7 @@ abstract class BaseKernel
      * @var array<MiddlewareInterface, string>
      */
     private array $middlewareCollection = [];
-    protected ?DateTimeInterface $startTime = null;
+    protected ?float $startTime = null;
 
     /**
      * BaseKernel constructor.
