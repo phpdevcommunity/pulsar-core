@@ -47,8 +47,8 @@ abstract class BaseKernel
         'prod'
     ];
 
+    private ?string $env = null;
     protected ContainerInterface $container;
-
     /**
      * @var array<MiddlewareInterface, string>
      */
@@ -88,35 +88,23 @@ abstract class BaseKernel
         }
     }
 
-    /**
-     * @return ContainerInterface
-     */
-    public function getContainer(): ContainerInterface
+    final public function getEnv(): string
+    {
+        return $this->env;
+    }
+
+    final public function getContainer(): ContainerInterface
     {
         return $this->container;
     }
 
-    abstract protected function getProjectDir(): string;
+    abstract public function getProjectDir(): string;
 
-    abstract protected function getCacheDir(): string;
+    abstract public function getCacheDir(): string;
 
-    abstract protected function getLogDir(): string;
+    abstract public function getLogDir(): string;
 
-    abstract protected function getConfigDir(): string;
-
-    protected function loadParameters(array $parameters): array
-    {
-        $parameters['pulsar.environment'] = getenv('APP_ENV');
-        $parameters['pulsar.debug'] = getenv('APP_ENV') === 'dev';
-        $parameters['pulsar.project_dir'] = $this->getProjectDir();
-        $parameters['pulsar.cache_dir'] = $this->getCacheDir();
-        $parameters['pulsar.logs_dir'] = $this->getLogDir();
-        $parameters['pulsar.config_dir'] = $this->getConfigDir();
-        $parameters['pulsar.template_directory'] = App::getTemplateDir();
-        $parameters['pulsar.public_directory'] = App::getPublicDir();
-
-        return $parameters;
-    }
+    abstract public function getConfigDir(): string;
 
     protected function loadContainer(array $definitions): ContainerInterface
     {
@@ -163,74 +151,48 @@ abstract class BaseKernel
     final private function boot(): void
     {
         (new DotEnv($this->getProjectDir() . DIRECTORY_SEPARATOR . '.env'))->load();
-        $environments = self::getAvailableEnvironments();
-        if (!in_array(getenv('APP_ENV'), $environments)) {
-            throw new InvalidArgumentException(sprintf(
-                    'The env "%s" do not exist. Defined environments are: "%s".',
-                    getenv('APP_ENV'),
-                    implode('", "', $environments))
-            );
-        }
+        $this->initEnv(getenv('APP_ENV'));
 
         date_default_timezone_set(getenv('APP_TIMEZONE') ?: 'UTC');
 
         error_reporting(0);
-        if (getenv('APP_ENV') === 'dev') {
+        if ($this->getEnv() === 'dev') {
             $this->startTime = microtime(true);
             ErrorHandler::register();
         }
 
         $middlewares = (require $this->getConfigDir() . DIRECTORY_SEPARATOR . 'middlewares.php');
         $middlewares = array_filter($middlewares, function ($environments) {
-            return in_array(getenv('APP_ENV'), $environments);
+            return in_array($this->getEnv(), $environments);
         });
         $this->middlewareCollection = array_keys($middlewares);
 
-        list($services, $parameters, $listeners, $routes, $commands) = $this->initDependencies();
+        list($services, $parameters, $listeners, $routes, $commands) = (new Dependency($this))->load();
         $router = $this->loadRouter($routes);
         $this->container = $this->loadContainer(array_merge(
-            $this->loadParameters($parameters),
+            $parameters,
             $services,
             [
+                BaseKernel::class => $this,
                 EventDispatcherInterface::class => $this->loadEventDispatcher($listeners),
                 Application::class => $this->loadConsole($commands),
                 'router' => $router,
-                get_class($router) => $router
+                get_class($router) => $router,
             ]
         ));
     }
 
-    final private function initDependencies(): array
+    final private function initEnv($env): void
     {
-        $services = (require $this->getConfigDir() . DIRECTORY_SEPARATOR . 'services.php');
-        $parameters = (require $this->getConfigDir() . DIRECTORY_SEPARATOR . 'parameters.php');
-        $listeners = (require $this->getConfigDir() . DIRECTORY_SEPARATOR . 'listeners.php');
-        $routes = (require $this->getConfigDir() . DIRECTORY_SEPARATOR . 'routes.php');
-        $commands = (require $this->getConfigDir() . DIRECTORY_SEPARATOR . 'commands.php');
-        foreach ($this->getPackages() as $package) {
-            $services = array_merge($package->getDefinitions(), $services);
-            $parameters = array_merge($package->getParameters(), $parameters);
-            $listeners = array_merge_recursive($package->getListeners(), $listeners);
-            $routes = array_merge($package->getRoutes(), $routes);
-            $commands = array_merge($package->getCommands(), $commands);
+        $environments = self::getAvailableEnvironments();
+        if (!in_array($env, $environments)) {
+            throw new InvalidArgumentException(sprintf(
+                    'The env "%s" do not exist. Defined environments are: "%s".',
+                    $env,
+                    implode('", "', $environments))
+            );
         }
-        return [$services, $parameters, $listeners, $routes, $commands];
-    }
-
-    /**
-     * @return array<PackageInterface>
-     */
-    final private function getPackages(): array
-    {
-        $packagesName = (require $this->getConfigDir() . DIRECTORY_SEPARATOR . 'packages.php');
-        $packages = [];
-        foreach ($packagesName as $packageName => $envs) {
-            if (!in_array(getenv('APP_ENV'), $envs)) {
-                continue;
-            }
-            $packages[] = new $packageName();
-        }
-        return $packages;
+        $this->env = $env;
     }
 
     final private static function getAvailableEnvironments(): array

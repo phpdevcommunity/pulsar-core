@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Pulsar\Core\Command;
 
@@ -7,7 +8,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-
 
 class CacheClearCommand extends Command
 {
@@ -36,20 +36,29 @@ class CacheClearCommand extends Command
 
         $io->comment('Clearing the cache : ' . $realCacheDir);
 
-        foreach (new \DirectoryIterator($realCacheDir) as $file) {
-            var_dump(get_class($file));
-//            if (is_file($str)) {
-//                return @unlink($str);
-//            }
-//            elseif (is_dir($str)) {
-//                $scan = glob(rtrim($str,'/').'/*');
-//                foreach($scan as $index=>$path) {
-//                    recursiveDelete($path);
-//                }
-//                return @rmdir($str);
-//            }
+        $files = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($realCacheDir, \FilesystemIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
+        );
+        /**
+         * @var \SplFileInfo $file
+         */
+        foreach ($files as $file) {
+            if ($file->getFilename() === '.gitignore') {
+                continue;
+            }
+            if ($file->isFile()) {
+                if (!unlink($file->getPathname())) {
+                    throw new \RuntimeException("Failed to unlink {$file->getPathname()} : " . var_export(error_get_last(), true));
+                }
+            }elseif ($file->isDir()) {
+                if (!rmdir($file->getPathname())) {
+                    throw new \RuntimeException("Failed to remove {$file->getPathname()} : " . var_export(error_get_last(), true));
+                }
+            }
         }
 
+        $io->success('Cache was successfully cleared.');
 
         return Command::SUCCESS;
     }
