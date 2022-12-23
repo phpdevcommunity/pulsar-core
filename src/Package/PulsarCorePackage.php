@@ -4,6 +4,7 @@ namespace Pulsar\Core\Package;
 
 use Psr\Container\ContainerInterface;
 use Pulsar\Core\App;
+use Pulsar\Core\Command\CacheClearCommand;
 use Pulsar\Core\ErrorHandler\ErrorRenderer\HtmlErrorRenderer;
 use Pulsar\Core\ErrorHandler\ExceptionHandler;
 use Pulsar\Core\Middlewares\RouterMiddleware;
@@ -47,6 +48,8 @@ final class PulsarCorePackage implements PackageInterface
 
     public function getCommands(): array
     {
-        return [];
+        return [
+            CacheClearCommand::class
+        ];
     }
 }
