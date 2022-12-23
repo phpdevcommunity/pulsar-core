@@ -38,9 +38,6 @@ final class JsonErrorRenderer
         return $response->withHeader('Content-Type', 'application/json');
     }
 
-    /**
-     * @return bool
-     */
     public function isDebug(): bool
     {
         return $this->debug;

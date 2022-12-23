@@ -100,7 +100,7 @@ if (!function_exists('asset')) {
 
     function asset(string $path): string
     {
-        return App::getAssetsDir() . DIRECTORY_SEPARATOR . $path;
+        return App::getPublicDir() . DIRECTORY_SEPARATOR . $path;
     }
 }
 

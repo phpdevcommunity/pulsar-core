@@ -10,9 +10,6 @@ use const E_USER_DEPRECATED;
 
 final class ErrorHandler
 {
-    /**
-     * @var array
-     */
     private array $deprecations = [];
 
     public static function register(): self

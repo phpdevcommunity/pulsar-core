@@ -15,19 +15,11 @@ use function next;
 
 final class RequestHandler implements RequestHandlerInterface
 {
-    /**
-     * @var ContainerInterface
-     */
     private ContainerInterface $container;
-
     /**
      * @var array<MiddlewareInterface, string>
      */
     private array $middlewareCollection;
-
-    /**
-     * @var \Closure|null
-     */
     private ?\Closure $then;
 
     public function __construct(ContainerInterface $container, array $middlewareCollection, \Closure $then = null)

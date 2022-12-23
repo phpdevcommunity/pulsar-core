@@ -9,14 +9,7 @@ namespace Pulsar\Core\Http\Exception;
  */
 class HttpException extends \Exception implements HttpExceptionInterface
 {
-    /**
-     * @var string|null
-     */
     protected static ?string $defaultMessage = 'An error occurred';
-
-    /**
-     * @var int
-     */
     private int $statusCode;
 
     public function __construct(int $statusCode, ?string $message = null, int $code = 0, \Throwable $previous = null)

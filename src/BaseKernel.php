@@ -111,6 +111,8 @@ abstract class BaseKernel
         $parameters['pulsar.cache_dir'] = $this->getCacheDir();
         $parameters['pulsar.logs_dir'] = $this->getLogDir();
         $parameters['pulsar.config_dir'] = $this->getConfigDir();
+        $parameters['pulsar.template_directory'] = App::getTemplateDir();
+        $parameters['pulsar.public_directory'] = App::getPublicDir();
 
         return $parameters;
     }

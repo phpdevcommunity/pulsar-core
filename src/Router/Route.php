@@ -2,8 +2,6 @@
 
 namespace Pulsar\Core\Router;
 
-use DevCoder\Helper;
-
 final class Route
 {
     private string $name;
@@ -33,7 +31,7 @@ final class Route
     public function __construct(string $name, string $path, $handler, array $methods = ['GET'])
     {
         if ($methods === []) {
-            throw new InvalidArgumentException('HTTP methods argument was empty; must contain at least one method');
+            throw new \InvalidArgumentException('HTTP methods argument was empty; must contain at least one method');
         }
         $this->name = $name;
         $this->path = '/' . rtrim(ltrim(trim($path), '/'), '/');

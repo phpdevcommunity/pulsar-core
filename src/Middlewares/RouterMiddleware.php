@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Pulsar\Core\Middlewares;
 
-use Aura\Router\RouterContainer;
-use DevCoder\Router;
 use LogicException;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -15,6 +13,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Pulsar\Core\Http\Exception\NotFoundException;
 use Pulsar\Core\Middlewares\Router\AuraRouterMiddleware;
 use Pulsar\Core\Middlewares\Router\SymfonyRouterMiddleware;
+use DevCoder\Router;
+use Aura\Router\RouterContainer;
 use Symfony\Component\Routing\RouteCollection;
 use function array_values;
 use function implode;
