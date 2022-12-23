@@ -5,7 +5,6 @@ namespace Pulsar\Core;
 
 use Closure;
 use DateTimeImmutable;
-use DateTimeInterface;
 use DevCoder\DotEnv;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
@@ -17,13 +16,15 @@ use Pulsar\Core\ErrorHandler\ErrorHandler;
 use Pulsar\Core\ErrorHandler\ExceptionHandler;
 use Pulsar\Core\Handler\RequestHandler;
 use Pulsar\Core\Http\Exception\HttpExceptionInterface;
-use Pulsar\Core\Router\RouterBuilder;
+use Pulsar\Core\Package\PackageInterface;
+use Symfony\Component\Console\Application;
 use Throwable;
 use function array_filter;
 use function array_keys;
 use function array_merge;
 use function date_default_timezone_set;
 use function error_reporting;
+use function get_class;
 use function getenv;
 use function implode;
 use function in_array;
@@ -135,6 +136,12 @@ abstract class BaseKernel
         return $routerBuilder($routes);
     }
 
+    protected function loadConsole(array $commands): Closure
+    {
+        $consoleBuilder = App::createConsoleBuilder();
+        return $consoleBuilder($commands);
+    }
+
     protected function log(Throwable $exception): void
     {
         $data = [
@@ -179,13 +186,16 @@ abstract class BaseKernel
         });
         $this->middlewareCollection = array_keys($middlewares);
 
-        list($services, $parameters, $listeners, $routes) = $this->initDependencies();
+        list($services, $parameters, $listeners, $routes, $commands) = $this->initDependencies();
+        $router = $this->loadRouter($routes);
         $this->container = $this->loadContainer(array_merge(
             $this->loadParameters($parameters),
             $services,
             [
                 EventDispatcherInterface::class => $this->loadEventDispatcher($listeners),
-                'router' => $this->loadRouter($routes)
+                Application::class => $this->loadConsole($commands),
+                'router' => $router,
+                get_class($router) => $router
             ]
         ));
     }
@@ -196,15 +206,20 @@ abstract class BaseKernel
         $parameters = (require $this->getConfigDir() . DIRECTORY_SEPARATOR . 'parameters.php');
         $listeners = (require $this->getConfigDir() . DIRECTORY_SEPARATOR . 'listeners.php');
         $routes = (require $this->getConfigDir() . DIRECTORY_SEPARATOR . 'routes.php');
+        $commands = (require $this->getConfigDir() . DIRECTORY_SEPARATOR . 'commands.php');
         foreach ($this->getPackages() as $package) {
             $services = array_merge($package->getDefinitions(), $services);
             $parameters = array_merge($package->getParameters(), $parameters);
             $listeners = array_merge_recursive($package->getListeners(), $listeners);
             $routes = array_merge($package->getRoutes(), $routes);
+            $commands = array_merge($package->getCommands(), $commands);
         }
-        return [$services, $parameters, $listeners, $routes];
+        return [$services, $parameters, $listeners, $routes, $commands];
     }
 
+    /**
+     * @return array<PackageInterface>
+     */
     final private function getPackages(): array
     {
         $packagesName = (require $this->getConfigDir() . DIRECTORY_SEPARATOR . 'packages.php');

@@ -8,7 +8,9 @@ interface PackageInterface
 
     public function getParameters(): array;
 
+    public function getListeners(): array;
+
     public function getRoutes(): array;
 
-    public function getListeners(): array;
+    public function getCommands(): array;
 }

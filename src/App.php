@@ -38,6 +38,9 @@ final class App
             (new Option('router_builder'))->validator(static function ($value) {
                 return $value instanceof \Closure;
             }),
+            (new Option('console_builder'))->validator(static function ($value) {
+                return $value instanceof \Closure;
+            }),
             (new Option('custom_environments'))->validator(static function ($value) {
                 if (is_array($value) === false) {
                     return false;
@@ -94,6 +97,11 @@ final class App
     public static function createRouterBuilder(): \Closure
     {
         return self::getApp()->options['router_builder'];
+    }
+
+    public static function createConsoleBuilder(): \Closure
+    {
+        return self::getApp()->options['console_builder'];
     }
 
     public static function getCustomEnvironments(): array

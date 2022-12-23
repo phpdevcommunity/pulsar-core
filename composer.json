@@ -27,9 +27,12 @@
         "psr/http-server-middleware": "^1.0",
         "psr/event-dispatcher": "^1.0",
         "psr/http-factory": "^1.0",
+        "psr/log": "^1.1",
         "devcoder-xyz/php-dotenv": "^1.0",
         "devcoder-xyz/php-options-resolver": "^1.0",
-        "psr/log": "^1.1",
+        "symfony/console": "^5.4"
+    },
+    "require-dev": {
         "phpunit/phpunit": "^9.5"
     }
 }

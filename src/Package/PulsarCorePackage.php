@@ -44,4 +44,9 @@ final class PulsarCorePackage implements PackageInterface
     {
         return [];
     }
+
+    public function getCommands(): array
+    {
+        return [];
+    }
 }
