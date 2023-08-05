@@ -112,24 +112,6 @@ abstract class BaseKernel
         return $containerBuilder($definitions, ['cache_dir' => $this->getCacheDir()]);
     }
 
-    protected function loadEventDispatcher(array $listeners): Closure
-    {
-        $eventDispatcherBuilder = App::createEventDispatcherBuilder();
-        return $eventDispatcherBuilder($listeners);
-    }
-
-    protected function loadRouter(array $routes): Closure
-    {
-        $routerBuilder = App::createRouterBuilder();
-        return $routerBuilder($routes);
-    }
-
-    protected function loadConsole(array $commands): Closure
-    {
-        $consoleBuilder = App::createConsoleBuilder();
-        return $consoleBuilder($commands);
-    }
-
     protected function log(Throwable $exception): void
     {
         $data = [
@@ -168,16 +150,14 @@ abstract class BaseKernel
         $this->middlewareCollection = array_keys($middlewares);
 
         list($services, $parameters, $listeners, $routes, $commands) = (new Dependency($this))->load();
-        $router = $this->loadRouter($routes);
         $this->container = $this->loadContainer(array_merge(
             $parameters,
             $services,
             [
-                BaseKernel::class => $this,
-                EventDispatcherInterface::class => $this->loadEventDispatcher($listeners),
-                Application::class => $this->loadConsole($commands),
-                'router' => $router,
-                get_class($router) => $router,
+                '__pulsar_commands' => $commands,
+                '__pulsar_listeners' => $listeners,
+                '__pulsar_routes' => $routes,
+                BaseKernel::class => $this
             ]
         ));
     }

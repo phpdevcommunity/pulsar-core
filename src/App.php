@@ -22,6 +22,7 @@ final class App
 
     private function __construct(array $options)
     {
+
         $resolver = new OptionsResolver([
             (new Option('server_request'))->validator(static function ($value) {
                 return $value instanceof \Closure;
@@ -32,15 +33,6 @@ final class App
             (new Option('container_builder'))->validator(static function ($value) {
                 return $value instanceof \Closure;
             }),
-            (new Option('event_dispatcher_builder'))->validator(static function ($value) {
-                return $value instanceof \Closure;
-            }),
-            (new Option('router_builder'))->validator(static function ($value) {
-                return $value instanceof \Closure;
-            }),
-            (new Option('console_builder'))->validator(static function ($value) {
-                return $value instanceof \Closure;
-            }),
             (new Option('custom_environments'))->validator(static function ($value) {
                 if (is_array($value) === false) {
                     return false;
@@ -49,7 +41,7 @@ final class App
                     return is_string($value) === false;
                 });
                 if ($environmentsFiltered !== []) {
-                  throw new \InvalidArgumentException('custom_environments array values must be string only');
+                    throw new \InvalidArgumentException('custom_environments array values must be string only');
                 }
                 return true;
 
@@ -87,21 +79,6 @@ final class App
     public static function createContainerBuilder(): \Closure
     {
         return self::getApp()->options['container_builder'];
-    }
-
-    public static function createEventDispatcherBuilder(): \Closure
-    {
-        return self::getApp()->options['event_dispatcher_builder'];
-    }
-
-    public static function createRouterBuilder(): \Closure
-    {
-        return self::getApp()->options['router_builder'];
-    }
-
-    public static function createConsoleBuilder(): \Closure
-    {
-        return self::getApp()->options['console_builder'];
     }
 
     public static function getCustomEnvironments(): array
