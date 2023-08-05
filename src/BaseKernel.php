@@ -143,11 +143,11 @@ abstract class BaseKernel
             ErrorHandler::register();
         }
 
-        $middlewares = (require $this->getConfigDir() . DIRECTORY_SEPARATOR . 'middlewares.php');
-        $middlewares = array_filter($middlewares, function ($environments) {
+        $middleware = (require $this->getConfigDir() . DIRECTORY_SEPARATOR . 'middleware.php');
+        $middleware = array_filter($middleware, function ($environments) {
             return in_array($this->getEnv(), $environments);
         });
-        $this->middlewareCollection = array_keys($middlewares);
+        $this->middlewareCollection = array_keys($middleware);
 
         list($services, $parameters, $listeners, $routes, $commands) = (new Dependency($this))->load();
         $this->container = $this->loadContainer(array_merge(

@@ -50,7 +50,7 @@ final class App
                 return is_string($value) && is_dir($value);
             }),
             (new Option('public_directory'))->validator(static function ($value) {
-                return is_string($value) && is_dir($value);
+                return is_string($value);
             }),
         ]);
         $this->options = $resolver->resolve($options);
