@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0369e25b167a7760da98746fa778cc6e",
+    "content-hash": "eea8c7386ffb7e3d53798c15960c8b5b",
     "packages": [
         {
             "name": "devcoder-xyz/php-dotenv",
@@ -94,6 +94,51 @@
                 "source": "https://github.com/devcoder-xyz/php-options-resolver/tree/1.0.0"
             },
             "time": "2021-06-13T12:15:09+00:00"
+        },
+        {
+            "name": "devcoder-xyz/php-renderer",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/devcoder-xyz/php-renderer.git",
+                "reference": "29faf852e08412f15ac712d0cb76154e610d32fe"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/devcoder-xyz/php-renderer/zipball/29faf852e08412f15ac712d0cb76154e610d32fe",
+                "reference": "29faf852e08412f15ac712d0cb76154e610d32fe",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.6"
+            },
+            "type": "package",
+            "autoload": {
+                "psr-4": {
+                    "DevCoder\\Renderer\\": "src",
+                    "Test\\DevCoder\\Renderer\\": "tests"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "F.Michel",
+                    "email": "dev@devcoder.xyz",
+                    "homepage": "https://www.devcoder.xyz"
+                }
+            ],
+            "description": "PHPRenderer is a lightweight PHP class for rendering templates natively in PHP, supporting blocks  for modular and reusable views.",
+            "support": {
+                "issues": "https://github.com/devcoder-xyz/php-renderer/issues",
+                "source": "https://github.com/devcoder-xyz/php-renderer/tree/1.0.0"
+            },
+            "time": "2023-08-05T21:03:34+00:00"
         },
         {
             "name": "psr/container",

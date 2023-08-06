@@ -55,8 +55,7 @@ final class Dependency
         $parameters['pulsar.cache_dir'] = $this->baseKernel->getCacheDir();
         $parameters['pulsar.logs_dir'] = $this->baseKernel->getLogDir();
         $parameters['pulsar.config_dir'] = $this->baseKernel->getConfigDir();
-        $parameters['pulsar.template_directory'] = App::getTemplateDir();
-        $parameters['pulsar.public_directory'] = App::getPublicDir();
+        $parameters['pulsar.public_dir'] = $this->baseKernel->getPublicDir();
 
         return $parameters;
     }

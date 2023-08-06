@@ -6,6 +6,7 @@ namespace Pulsar\Core;
 
 use DevCoder\Resolver\Option;
 use DevCoder\Resolver\OptionsResolver;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -19,10 +20,10 @@ final class App
 {
     private array $options;
     private static App $instance;
+    private ?ContainerInterface $container = null;
 
     private function __construct(array $options)
     {
-
         $resolver = new OptionsResolver([
             (new Option('server_request'))->validator(static function ($value) {
                 return $value instanceof \Closure;
@@ -30,7 +31,7 @@ final class App
             (new Option('response_factory'))->validator(static function ($value) {
                 return $value instanceof \Closure;
             }),
-            (new Option('container_builder'))->validator(static function ($value) {
+            (new Option('container'))->validator(static function ($value) {
                 return $value instanceof \Closure;
             }),
             (new Option('custom_environments'))->validator(static function ($value) {
@@ -46,12 +47,6 @@ final class App
                 return true;
 
             })->setDefaultValue([]),
-            (new Option('template_directory'))->validator(static function ($value) {
-                return is_string($value) && is_dir($value);
-            }),
-            (new Option('public_directory'))->validator(static function ($value) {
-                return is_string($value);
-            }),
         ]);
         $this->options = $resolver->resolve($options);
     }
@@ -76,24 +71,24 @@ final class App
         return $responseFactory();
     }
 
-    public static function createContainerBuilder(): \Closure
+    public static function createContainer($definitions, $options): ContainerInterface
     {
-        return self::getApp()->options['container_builder'];
+        if (self::getApp()->container instanceof ContainerInterface) {
+            throw new \LogicException('A container has already been built in ' . self::class);
+        }
+        self::getApp()->container = self::getApp()->options['container']($definitions, $options);
+
+        return self::getContainer();
+    }
+
+    public static function getContainer(): ContainerInterface
+    {
+        return self::getApp()->container;
     }
 
     public static function getCustomEnvironments(): array
     {
         return self::getApp()->options['custom_environments'];
-    }
-
-    public static function getTemplateDir(): string
-    {
-        return self::getApp()->options['template_directory'];
-    }
-
-    public static function getPublicDir(): string
-    {
-        return self::getApp()->options['public_directory'];
     }
 
     private static function getApp(): self

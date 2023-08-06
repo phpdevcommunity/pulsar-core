@@ -106,10 +106,11 @@ abstract class BaseKernel
 
     abstract public function getConfigDir(): string;
 
+    abstract public function getPublicDir(): string;
+
     protected function loadContainer(array $definitions): ContainerInterface
     {
-        $containerBuilder = App::createContainerBuilder();
-        return $containerBuilder($definitions, ['cache_dir' => $this->getCacheDir()]);
+        return App::createContainer($definitions, ['cache_dir' => $this->getCacheDir()]);
     }
 
     protected function log(Throwable $exception): void
@@ -154,12 +155,13 @@ abstract class BaseKernel
             $parameters,
             $services,
             [
-                '__pulsar_commands' => $commands,
-                '__pulsar_listeners' => $listeners,
-                '__pulsar_routes' => $routes,
+                'pulsar.commands' => $commands,
+                'pulsar.listeners' => $listeners,
+                'pulsar.routes' => $routes,
                 BaseKernel::class => $this
             ]
         ));
+
     }
 
     final private function initEnv($env): void

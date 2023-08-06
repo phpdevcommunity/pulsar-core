@@ -1,5 +1,7 @@
 <?php
 
+use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Pulsar\Core\App;
 
@@ -26,11 +28,27 @@ if (!function_exists('send')) {
     }
 }
 
+if (!function_exists('container')) {
+
+    function container(): ContainerInterface
+    {
+        return App::getContainer();
+    }
+}
+
+if (!function_exists('response_factory')) {
+
+    function response_factory(): ResponseFactoryInterface
+    {
+        return App::getResponseFactory();
+    }
+}
+
 if (!function_exists('response')) {
 
     function response(string $content = '', int $status = 200): ResponseInterface
     {
-        $response = App::getResponseFactory()->createResponse($status);
+        $response = response_factory()->createResponse($status);
         $response->getBody()->write($content);
         return $response;
     }
@@ -44,7 +62,7 @@ if (!function_exists('json_response')) {
     | JSON_HEX_QUOT
     | JSON_UNESCAPED_SLASHES): ResponseInterface
     {
-        $response = App::getResponseFactory()->createResponse($status);
+        $response = response_factory()->createResponse($status);
         $response->getBody()->write(json_encode($data, $flags));
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new InvalidArgumentException(
@@ -59,7 +77,7 @@ if (!function_exists('redirect')) {
 
     function redirect(string $url, int $status = 302): ResponseInterface
     {
-        $response = App::getResponseFactory()->createResponse($status);
+        $response = response_factory()->createResponse($status);
         return $response->withHeader('Location', $url);
     }
 }
@@ -68,15 +86,8 @@ if (!function_exists('render_view')) {
 
     function render_view(string $view, array $context = []): string
     {
-        $view = App::getTemplateDir() . DIRECTORY_SEPARATOR . $view;
-        if (!file_exists($view)) {
-            throw new Exception(sprintf('The file %s could not be found.', $view));
-        }
-
-        extract($context);
-        ob_start();
-        include($view);
-        return trim(ob_get_clean());
+        $renderer = container()->get('render');
+        return $renderer->render($view, $context);
     }
 }
 
@@ -90,17 +101,9 @@ if (!function_exists('render')) {
 
 if (!function_exists('__e')) {
 
-    function __e(string $str): string
+    function __e(string $str, int $flags = ENT_QUOTES, string $encoding = 'UTF-8'): string
     {
-        return htmlentities($str, ENT_QUOTES, 'UTF-8');
-    }
-}
-
-if (!function_exists('asset')) {
-
-    function asset(string $path): string
-    {
-        return App::getPublicDir() . DIRECTORY_SEPARATOR . $path;
+        return htmlentities($str, $flags, $encoding);
     }
 }
 

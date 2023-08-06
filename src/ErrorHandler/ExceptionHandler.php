@@ -29,7 +29,7 @@ class ExceptionHandler
                     ->setDefaultValue(false),
                 (new Option('json_response'))
                     ->validator(static function ($value) {
-                        return  is_callable($value);
+                        return is_callable($value);
                     })
                     ->setDefaultValue(new JsonErrorRenderer($this->responseFactory, $options['debug'])),
                 (new Option('html_response'))
